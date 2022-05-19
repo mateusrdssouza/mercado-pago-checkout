@@ -242,12 +242,12 @@
 							return response.json();
 						})
 						.then(result => {
-							if(!result.hasOwnProperty('error_message')) {
+							if(!result.hasOwnProperty('error_message') && result.id != null) {
 								$('#productDetails, #accordionExample, #btnHide').hide('slow');
 								$('#finalCard').show('slow');
 							}
 							else {
-								alert(result.error_message);
+								alert("Ocorreu um erro ao efetuar o pagamento.");
 							}
 						})
 						.catch(error => {
