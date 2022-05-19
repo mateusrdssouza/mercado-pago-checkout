@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+/**
+ * Checkout routes
+ */
+Route::controller(App\Http\Controllers\CheckoutController::class)->group(function () {
+	Route::get('', 'index')->name('index');
+	Route::post('process', 'process')->name('process');
 });
