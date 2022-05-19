@@ -8,16 +8,29 @@ use Exception;
 class CheckoutController extends Controller
 {
 	private $public_key;
+	private $access_token;
 
 	public function __construct()
 	{
 		$this->public_key = env('MERCADO_PAGO_PUBLIC_KEY');
 		$this->access_token = env('MERCADO_PAGO_ACCESS_TOKEN');
-		\MercadoPago\SDK::setAccessToken($this->access_token);
+	}
+
+	public function setAccessToken()
+	{
+		try
+		{
+			\MercadoPago\SDK::setAccessToken($this->access_token);
+		}
+		catch(Exception $e)
+		{
+			die('<h2>Não foi possível estabelecer conexão</h2><p>Verifique se as chaves pública e privada foram inseridas corretamente no arquivo de configuração</p>');
+		}
 	}
 
 	public function index()
 	{
+		$this->setAccessToken();
 		return view('index', ['publicKey' => $this->public_key]);
 	}
 
@@ -43,6 +56,8 @@ class CheckoutController extends Controller
 	{
 		try
 		{
+			$this->setAccessToken();
+
 			$payment = new \MercadoPago\Payment();
 			$payment->transaction_amount = (float)$request->transaction_amount;
 			$payment->token = $request->token;
@@ -84,6 +99,8 @@ class CheckoutController extends Controller
 	{
 		try
 		{
+			$this->setAccessToken();
+
 			$payment = new \MercadoPago\Payment();
 			$payment->transaction_amount = (float)$request->transactionAmount;
 			$payment->description = $request->productDescription;
