@@ -189,7 +189,7 @@
 
 											</div>
 
-											<button class="w-100 btn btn-primary btn-lg my-5" type="submit" id="form-checkout__submit">Finalizar pagamento</button>
+											<button class="w-100 btn btn-primary btn-lg my-5" type="submit" id="btnBoleto">Finalizar pagamento</button>
 
 										</form>
 
@@ -269,6 +269,7 @@
 						console.log("Form mounted");
 					},
 					onSubmit: event => {
+
 						event.preventDefault();
 
 						const {
@@ -342,6 +343,9 @@
 					type: 'POST',
 					url: '/process',
 					data: form.serialize(),
+					beforeSend: function() {
+						$('#btnBoleto').addClass('disabled');
+					},
 					success: function(result) {
 						if(!result.hasOwnProperty('error_message') && result.id != null) {
 							$('#linkBoleto').prop('href', result.transaction_details);
@@ -354,6 +358,9 @@
 					},
 					error: function(e) {
 						alert("Ocorreu um erro ao efetuar o pagamento.");
+					},
+					complete: function() {
+						$('#btnBoleto').removeClass('disabled');
 					}
 				});
 			});
