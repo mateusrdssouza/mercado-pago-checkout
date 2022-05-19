@@ -20,7 +20,7 @@
 			<main>
 
 				<div class="py-4 text-center">
-					<img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+					<img class="d-block mx-auto mt-3 mb-3" src="{{ asset('img/logo.png') }}" alt="" height="60">
 				</div>
 
 				<div id="productDetails">
