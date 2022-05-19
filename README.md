@@ -9,8 +9,8 @@ cp .env.development .env
 \
 Insira sua pública e sua chave privada nos campos indicados no arquivo **.env**:
 ```sh
-MERCADO_PAGO_PUBLIC_KEY={{ YOUR_PUBLIC_KEY }}
-MERCADO_PAGO_ACCESS_TOKEN={{ YOUR_ACCESS_TOKEN }}
+MERCADO_PAGO_PUBLIC_KEY=YOUR_PUBLIC_KEY
+MERCADO_PAGO_ACCESS_TOKEN=YOUR_ACCESS_TOKEN
 ```
 \
 Execute o comando abaixo para instalar as dependências do projeto:
