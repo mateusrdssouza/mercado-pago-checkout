@@ -23,24 +23,28 @@
 					<img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
 				</div>
 
-				<div class="card">
-					<div class="row card-body">
-						<div class="col-md-6">
-							<h4>Produto</h4>
-							<p class="mb-0">Fone de Ouvido Bluetooth</p>
-						</div>
-						<div class="col-md-6">
-							<h4>Valor</h4>
-							<p class="mb-0">R$ 100,00</p>
+				<div id="productDetails">
+
+					<div class="card">
+						<div class="row card-body">
+							<div class="col-md-6">
+								<h4>Produto</h4>
+								<p class="mb-0">Fone de Ouvido Bluetooth</p>
+							</div>
+							<div class="col-md-6">
+								<h4>Valor</h4>
+								<p class="mb-0">R$ 100,00</p>
+							</div>
 						</div>
 					</div>
+
+					<br>
+
+					<h4 class="mt-2 mb-3 mx-1">Selecione o método de pagamento</h4>
+
 				</div>
 
-				<br>
-
-				<h4 class="mt-2 mb-3 mx-1">Selecione o método de pagamento</h4>
-
-				<div class="accordion" id="accordionExample">
+				<div class="accordion mb-5" id="accordionExample">
 					<div class="accordion-item">
 						<h2 class="accordion-header" id="headingOne">
 							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
@@ -133,6 +137,11 @@
 							</div>
 						</div>
 					</div>
+				</div>
+
+				<div id="finalCard" style="display:none">
+					<h1 class="display-4 mt-5 fw-normal text-center">Obrigado!</h1>
+					<h3 class="text-center mt-3 fw-light">Você receberá os detalhes da sua compra no seu e-mail.</h3>
 				</div>
 
 			</main>
@@ -228,6 +237,21 @@
 									},
 								},
 							}),
+						})
+						.then(response => {
+							return response.json();
+						})
+						.then(result => {
+							if(!result.hasOwnProperty('error_message')) {
+								$('#productDetails, #accordionExample, #btnHide').hide('slow');
+								$('#finalCard').show('slow');
+							}
+							else {
+								alert(result.error_message);
+							}
+						})
+						.catch(error => {
+							alert("Ocorreu um erro ao efetuar o pagamento.");
 						});
 					},
 					onFetching: (resource) => {
