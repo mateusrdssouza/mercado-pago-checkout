@@ -133,7 +133,68 @@
 						</h2>
 						<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
 							<div class="accordion-body">
-								<strong>This is the second item's accordion body.</strong> It ityle =on does limit overflow.
+								<div class="row g-12">
+									<div class="col-lg-10 offset-lg-1">
+
+										<form id="form-checkout-boleto">
+											<input type="hidden" name="form_type" value="2">
+											<input type="hidden" name="transactionAmount" value="100">
+											<input type="hidden" name="productDescription" value="Fone de Ouvido Bluetooth">
+											@csrf
+
+											<div class="row g-3 mt-3">
+
+												<h4 class="mb-3">Pagamento</h4>
+
+												<div class="col-12">
+													<label for="paymentMethod" class="form-label">Método de Pagamento</label>
+													<select class="form-select" name="paymentMethod" id="paymentMethod">
+														<option value="bolbradesco">Boleto</option>
+													</select>
+												</div>
+
+											</div>
+
+											<div class="row g-3 mt-4">
+
+												<h4 class="mb-3">Dados do Comprador</h4>
+
+												<div class="col-md-6">
+													<label for="payerFirstName" class="form-label">Nome</label>
+													<input type="text" class="form-control" id="payerFirstName" name="payerFirstName" required>
+												</div>
+
+												<div class="col-md-6">
+													<label for="payerLastName" class="form-label">Sobrenome</label>
+													<input type="text" class="form-control" id="payerLastName" name="payerLastName" required>
+												</div>
+
+												<div class="col-md-12">
+													<label for="payerEmail" class="form-label">E-mail</label>
+													<input type="email" class="form-control" id="payerEmail" name="payerEmail" required>
+												</div>
+
+												<div class="col-md-6">
+													<label for="docType" class="form-label">Tipo de Documento</label>
+													<select class="form-select" id="docType" name="docType" required>
+														<option value="CPF">CPF</option>
+														<option value="CNPJ">CNPJ</option></select>
+													</select>
+												</div>
+
+												<div class="col-md-6">
+													<label for="docNumber" class="form-label">Número do documento</label>
+													<input type="text" class="form-control" id="docNumber" name="docNumber" required>
+												</div>
+
+											</div>
+
+											<button class="w-100 btn btn-primary btn-lg my-5" type="submit" id="form-checkout__submit">Finalizar pagamento</button>
+
+										</form>
+
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -142,6 +203,12 @@
 				<div id="finalCard" style="display:none">
 					<h1 class="display-4 mt-5 fw-normal text-center">Obrigado!</h1>
 					<h3 class="text-center mt-3 fw-light">Você receberá os detalhes da sua compra no seu e-mail.</h3>
+				</div>
+
+				<div id="finalBoleto" style="display:none">
+					<h1 class="display-4 mt-5 fw-normal text-center">Obrigado!</h1>
+					<h3 class="text-center mt-3 fw-light">Você receberá os detalhes da sua compra no seu e-mail.</h3>
+					<a href="" id="linkBoleto" class="w-100 btn btn-primary btn-lg my-4" target="_blank">Imprimir boleto</a>
 				</div>
 
 			</main>
@@ -243,7 +310,7 @@
 						})
 						.then(result => {
 							if(!result.hasOwnProperty('error_message') && result.id != null) {
-								$('#productDetails, #accordionExample, #btnHide').hide('slow');
+								$('#productDetails, #accordionExample').hide('slow');
 								$('#finalCard').show('slow');
 							}
 							else {
@@ -258,6 +325,37 @@
 						console.log("Fetching resource: ", resource);
 					}
 				},
+			});
+
+		</script>
+
+		<script>
+
+			$('#form-checkout-boleto').submit(function(e) {
+
+				e.preventDefault();
+
+				var form = $(this);
+				var actionUrl = form.attr('action');
+
+				$.ajax({
+					type: 'POST',
+					url: '/process',
+					data: form.serialize(),
+					success: function(result) {
+						if(!result.hasOwnProperty('error_message') && result.id != null) {
+							$('#linkBoleto').prop('href', result.transaction_details);
+							$('#productDetails, #accordionExample').hide('slow');
+							$('#finalBoleto').show('slow');
+						}
+						else {
+							alert("Ocorreu um erro ao efetuar o pagamento.");
+						}
+					},
+					error: function(e) {
+						alert("Ocorreu um erro ao efetuar o pagamento.");
+					}
+				});
 			});
 
 		</script>

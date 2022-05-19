@@ -25,8 +25,17 @@ class CheckoutController extends Controller
 	{
 		switch($request->form_type)
 		{
+			/**
+			 * 1: Pagamento com cartão de crédito
+			 */
 			case 1:
 				return $this->processCard($request);
+
+			/**
+			 * 2: Pagamento com boleto bancário
+			 */
+			case 2:
+				return $this->processBoleto($request);
 		}
 	}
 
@@ -57,6 +66,54 @@ class CheckoutController extends Controller
 				'status' => $payment->status,
 				'status_detail' => $payment->status_detail,
 				'id' => $payment->id
+			);
+
+			return response()->json($response, 201);
+		}
+		catch(Exception $e)
+		{
+			$response = array(
+				'error_message' => $e->getMessage()
+			);
+
+			return response()->json($response, 400);
+		}
+	}
+
+	public function processBoleto($request)
+	{
+		try
+		{
+			$payment = new \MercadoPago\Payment();
+			$payment->transaction_amount = (float)$request->transactionAmount;
+			$payment->description = $request->productDescription;
+			$payment->payment_method_id = $request->paymentMethod;
+
+			$payment->payer = array(
+				'email' => $request->payerEmail,
+				'first_name' => $request->payerFirstName,
+				'last_name' => $request->payerLastName,
+				'identification' => array(
+					'type' => $request->docType,
+					'number' => $request->docNumber
+				),
+				'address' =>  array(
+					'zip_code' => '06233200',
+					'street_name' => 'Av. das Nações Unidas',
+					'street_number' => '3003',
+					'neighborhood' => 'Bonfim',
+					'city' => 'Osasco',
+					'federal_unit' => 'SP'
+				)
+			);
+
+			$payment->save();
+
+			$response = array(
+				'status' => $payment->status,
+				'status_detail' => $payment->status_detail,
+				'id' => $payment->id,
+				'transaction_details' => $payment->transaction_details->external_resource_url
 			);
 
 			return response()->json($response, 201);
