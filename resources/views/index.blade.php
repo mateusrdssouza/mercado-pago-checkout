@@ -6,8 +6,11 @@
 		<meta name="description" content="">
 		<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 		<meta name="generator" content="Hugo 0.98.0">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<title>Checkout Transparente</title>
 		<script src="https://sdk.mercadopago.com/js/v2"></script>
+		<script src="{{ asset('js/jquery.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.mask.js') }}"></script>
 		<link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/checkout/">
 		<link href="https://getbootstrap.com/docs/5.2/dist/css/bootstrap.min.css" rel="stylesheet">
 		<link href="https://getbootstrap.com/docs/5.2/examples/checkout/form-validation.css" rel="stylesheet">
@@ -49,7 +52,7 @@
 								<div class="row g-12">
 									<div class="col-lg-10 offset-lg-1">
 
-										<form id="form-checkout">
+										<form id="form-checkout-card">
 											@csrf
 
 											<div class="row g-3 mt-3">
@@ -98,7 +101,7 @@
 												</div>
 
 												<div class="col-md-6">
-													<label for="issuer" class="form-label">Banco</label>
+													<label for="issuer" class="form-label">Operadora</label>
 													<select class="form-select" name="issuer" id="form-checkout__issuer"></select>
 												</div>
 
@@ -146,7 +149,7 @@
 				amount: "100",
 				autoMount: true,
 				form: {
-					id: "form-checkout",
+					id: "form-checkout-card",
 					cardholderName: {
 						id: "form-checkout__cardholderName",
 						placeholder: "Digite seu nome completo"
@@ -169,7 +172,7 @@
 					},
 					expirationDate: {
 						id: "form-checkout__expirationDate",
-						placeholder: "MM/YYYY"
+						placeholder: "MM/YY"
 					},
 					securityCode: {
 						id: "form-checkout__securityCode",
@@ -177,7 +180,7 @@
 					},
 					issuer: {
 						id: "form-checkout__issuer",
-						placeholder: "Selecione um banco"
+						placeholder: "Selecione uma operadora"
 					},
 					installments: {
 						id: "form-checkout__installments",
@@ -207,14 +210,16 @@
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",
+								'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 							},
 							body: JSON.stringify({
+								form_type: Number(1),
 								token,
 								issuer_id,
 								payment_method_id,
 								transaction_amount: Number(amount),
 								installments: Number(installments),
-								description: "Descrição do produto",
+								description: "Fone de Ouvido Bluetooth",
 								payer: {
 									email,
 									identification: {
@@ -231,6 +236,14 @@
 				},
 			});
 
+		</script>
+
+		<script>
+			$(document).ready(function(){
+				$('#form-checkout__cardNumber').mask('0000 0000 0000 0000');
+				$('#form-checkout__expirationDate').mask('00/00');
+				$('#form-checkout__securityCode').mask('000');
+			});
 		</script>
 
 	</body>

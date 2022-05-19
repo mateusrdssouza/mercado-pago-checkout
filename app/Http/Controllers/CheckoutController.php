@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Exception;
 
 class CheckoutController extends Controller
 {
@@ -21,36 +22,52 @@ class CheckoutController extends Controller
 	}
 
 	public function process(Request $request)
-	{}
+	{
+		switch($request->form_type)
+		{
+			case 1:
+				return $this->processCard($request);
+		}
+	}
 
-/*
-	MercadoPago\SDK::setAccessToken("YOUR_ACCESS_TOKEN");
+	public function processCard($request)
+	{
+		try
+		{
+			$payment = new \MercadoPago\Payment();
+			$payment->transaction_amount = (float)$request->transaction_amount;
+			$payment->token = $request->token;
+			$payment->description = $request->description;
+			$payment->installments = (int)$request->installments;
+			$payment->payment_method_id = $request->payment_method_id;
+			$payment->issuer_id = (int)$request->issuer_id;
 
-	$payment = new MercadoPago\Payment();
-	$payment->transaction_amount = (float)$_POST['transactionAmount'];
-	$payment->token = $_POST['token'];
-	$payment->description = $_POST['description'];
-	$payment->installments = (int)$_POST['installments'];
-	$payment->payment_method_id = $_POST['paymentMethodId'];
-	$payment->issuer_id = (int)$_POST['issuer'];
+			$payer = new \MercadoPago\Payer();
+			$payer->email = $request->payer['email'];
+			$payer->identification = array(
+				'type' => $request->payer['identification']['type'],
+				'number' => $request->payer['identification']['number']
+			);
 
-	$payer = new MercadoPago\Payer();
-	$payer->email = $_POST['cardholderEmail'];
-	$payer->identification = array(
-		"type" => $_POST['identificationType'],
-		"number" => $_POST['identificationNumber']
-	);
-	$payer->first_name = $_POST['cardholderName'];
-	$payment->payer = $payer;
+			$payment->payer = $payer;
 
-	$payment->save();
+			$payment->save();
 
-	$response = array(
-		'status' => $payment->status,
-		'status_detail' => $payment->status_detail,
-		'id' => $payment->id
-	);
+			$response = array(
+				'status' => $payment->status,
+				'status_detail' => $payment->status_detail,
+				'id' => $payment->id
+			);
 
-	echo json_encode($response);
-*/
+			return response()->json($response, 201);
+		}
+		catch(Exception $e)
+		{
+			$response = array(
+				'error_message' => $e->getMessage()
+			);
+
+			return response()->json($response, 400);
+		}
+	}
 }
